@@ -5,14 +5,14 @@ from math import exp
 #Initialize the neural network with the number of inputs, the number of neurons in the hidden layer and n_outputs in the output layer
 def initialize_netwrok(n_inputs,n_hidden,n_outputs):
     network = list() #W'll implement network as a list of layer and layer as a list of dictionnary (weights and bias)
-    hidden_layers = [{'weights ': [random() for i in range(n_inputs+1)]} for i in range(n_hidden)] #randomly Initialize the weights of hidden layer, in this case the bias is a special weight
+    hidden_layers = [{'weights ': [random() for i in range(n_inputs+1)]} for i in range(n_hidden)] #randomly Initialize the weights of hidden layer, in this case the bias is a special weight (the last index of the weights array)
     network.append(hidden_layers)
-    output_layer = [{'weights ':[random() for i in range(n_outputs+1)]} for i in range(n_outputs)] # randomy initialize the weights of output layyer of the neural networkds
+    output_layer = [{'weights ':[random() for i in range(n_outputs+1)]} for i in range(n_outputs)] # randomly initialize the weights of output layyer of the neural networkds
     network.append(output_layer)
     return network
 
 #We will now calculate the neuron activation of one neuron given an input that could be a row from the dataset
-#Neuron activation is calculates as the weighted sum of weight : ctivation = sum(weight_i*input-i) + bias
+#Neuron activation is calculates as the weighted sum of weight : activation = sum(weight_i*input_i) + bias
 #We can say that the bias is the last term of the weights list
 def activate(weights,inputs):
     activation = weights[-1] #bias term
@@ -40,9 +40,10 @@ def forward_propagate(network,row):
         inputs = new_inputs
     return inputs
 
+#The derivate function of the transfert function, we use only the sigmoid function 
 def transfert_derivate(output):
     return output * (1 - output)
-    
+
 if __name__ == "__main__":
     seed(1)
     network = [[{'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],[{'weights': [0.2550690257394217, 0.49543508709194095]}, {'weights': [0.4494910647887381, 0.651592972722763]}]]
