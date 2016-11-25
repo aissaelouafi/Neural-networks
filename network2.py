@@ -72,6 +72,28 @@ def backward_propagate_error(network,expected):
             neuron['delta'] = errors[j]*transfert_derivate(neuron['output'])
 
 
+#The network is trained using a stochastic gradient descent, the involves multiple iterations on row dat => data forward propagating
+#backpropagating the error and update the weights of our neural netwroks so we will update weights and train the neural networks
+#Once error ar calculated for each neuron in the network via the back propagation method, they can used to update the netwroks weights
+#using the following fomula : weight = weight + learning_rate * error *input (lr : parameter, error : error callculated by the BPE algorithm (in this case the delta value)
+# and input is the input value caused the error), the same procedure can be applyed to bias (we can suppose that the weight of bias is 1)
+
+#update weights of a given raw data input
+#input of output layer is the output from the hidden layers
+#TODO : Use stochasitic gradient descent (shuffle data and use only a part of data, it will be verry fast)
+def update_weights(network,rate,learning_rate):
+    for i in range(len(network)): #loop on network layers
+        inputs = row
+        if i!= 0:
+            inputs = [neuron['output'] for neuron in network[i-1]] #Get the neuron output from the neural networks
+        for neuron in network[i]: #loop on neuron in the ith layer
+            for j in range(len(inputs)-1): #loop on inout data
+                neuron['weights'][j] += learning_rate * neuron['delta'] * inputs[j]
+            neuron[weights][-1] += learning_rate * neuron['delta']
+
+
+
+
 if __name__ == "__main__":
     seed(1)
     network = [[{'output': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
