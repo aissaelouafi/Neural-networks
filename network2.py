@@ -53,19 +53,20 @@ def transfert_derivate(output):
 #weight_k is the weight that connect the kth neuron
 
 #The error signal in the hidden layer is accumulated from neurons in the ouput layer
-def backward_propagate_error(network,excepted):
-    for i in reversed(range(len(netwrok))): #loop on network reversed
+def backward_propagate_error(network,expected):
+    for i in reversed(range(len(network))): #loop on network reversed
         layer = network[i] #get current layer
         errors = list() #initialize errors
-        if i! = len(network) - 1: #calculcate the error of hidden layers
-            for(j in range(len(layer))) : #loop on neurons in the hidden layers
+        if i != len(network) - 1: #calculcate the error of hidden layers
+            for j in range(len(layer)): #loop on neurons in the hidden layers
                 error = 0.0
-                for neuron in layer[i+1]: #get neurons in the hidden layer
+                for neuron in network[i+1]: #get neurons in the hidden layer
                     error += (neuron['weights'][j]*neuron['delta'])
+                errors.append(error)
         else : #output layer
             for j in range(len(layer)): #explore neuron in the output layer
                 neuron = layer[j]
-                errors.appends(excepted[j]-neuron['output'])
+                errors.append(expected[j]-neuron['output'])
         for j in range(len(layer)): #explore neuron in layer
             neuron = layer[j]
             neuron['delta'] = errors[j]*transfert_derivate(neuron['output'])
@@ -73,7 +74,11 @@ def backward_propagate_error(network,excepted):
 
 if __name__ == "__main__":
     seed(1)
-    network = [[{'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],[{'weights': [0.2550690257394217, 0.49543508709194095]}, {'weights': [0.4494910647887381, 0.651592972722763]}]]
+    network = [[{'output': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
+    		[{'output': 0.6213859615555266, 'weights': [0.2550690257394217, 0.49543508709194095]},
+            {'output': 0.6573693455986976, 'weights': [0.4494910647887381, 0.651592972722763]}]]
+    expected = [0, 1]
     row = [1,0,None]
-    output = forward_propagate(network,row)
-    print(output)
+    backward_propagate_error(network,expected)
+    for layer in network:
+        print(layer)
