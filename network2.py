@@ -40,9 +40,36 @@ def forward_propagate(network,row):
         inputs = new_inputs
     return inputs
 
-#The derivate function of the transfert function, we use only the sigmoid function 
+#The derivate function of the transfert function, we use only the sigmoid function
 def transfert_derivate(output):
     return output * (1 - output)
+
+#Error propagation in order to calculate the error for each output neuron that give an error signal signal (input) to propagate backwards
+#through the netwrok, the error for a given output neuron can be calculated as follows : error = (excepted-output)*transfert_derivate(output)
+#the output is the value predicted by the output neuron and excpeted is the desired output value
+
+#The error signal of a hidden layer is more complicated, the error signal for a neuron in the hidden layer is calculated as the weighted error
+#of each neuron in the output error = (weight_k * error_j) * transfer_derivative(output) error_j is the error calculated from the jth output neuron
+#weight_k is the weight that connect the kth neuron
+
+#The error signal in the hidden layer is accumulated from neurons in the ouput layer
+def backward_propagate_error(network,excepted):
+    for i in reversed(range(len(netwrok))): #loop on network reversed
+        layer = network[i] #get current layer
+        errors = list() #initialize errors
+        if i! = len(network) - 1: #calculcate the error of hidden layers
+            for(j in range(len(layer))) : #loop on neurons in the hidden layers
+                error = 0.0
+                for neuron in layer[i+1]: #get neurons in the hidden layer
+                    error += (neuron['weights'][j]*neuron['delta'])
+        else : #output layer
+            for j in range(len(layer)): #explore neuron in the output layer
+                neuron = layer[j]
+                errors.appends(excepted[j]-neuron['output'])
+        for j in range(len(layer)): #explore neuron in layer
+            neuron = layer[j]
+            neuron['delta'] = errors[j]*transfert_derivate(neuron['output'])
+
 
 if __name__ == "__main__":
     seed(1)
