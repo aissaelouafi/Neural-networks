@@ -3,6 +3,7 @@ from random import random
 from random import randrange
 from math import exp
 from csv import reader
+import matplotlib.pyplot as plt
 
 #Load csv file
 def load_csv(filename):
@@ -125,6 +126,7 @@ def update_weights(network,row,learning_rate):
 #we can plot the evolution of error rate of each epoch iterations in order to see the evolution of networks based on epochs
 #sum of squared error
 def train_network(network,train,learning_rate,n_epochs,n_outputs):
+    epoch_errors = []
     for epoch in range(n_epochs):
         sum_error = 0
         for row in train:
@@ -135,11 +137,22 @@ def train_network(network,train,learning_rate,n_epochs,n_outputs):
             backward_propagate_error(network,expected)
             update_weights(network,row,learning_rate)
         print('>> epoch = %d, learning_rate = %.3f, error = %.3f' % (epoch,learning_rate,sum_error))
+        epoch_errors.append(sum_error)
+    return epoch_errors
 
 #Define a function to predict the output of a trained neural networks
 def predict(network,row):
     outputs = forward_propagate(network,row)
     return outputs.index(max(outputs))
+
+
+#def plot_epochs_accuracy(epoch_errors):
+def plt_error_accuracy(epoch_errors):
+    plt.plot(epoch_errors)
+    plt.ylabel('Error accuracy')
+    plt.xlabel('Epochs')
+    plt.show()
+
 
 if __name__ == "__main__":
     seed(1)
@@ -170,21 +183,24 @@ if __name__ == "__main__":
     n_outputs = len(set([row[-1] for row in dataset]))
     network = initialize_netwrok(n_inputs,2,n_outputs)
     #print(network)
-    train_network(network,dataset,0.500,30,n_outputs)
+    epoch_errors = train_network(network,dataset,0.500,6,n_outputs)
 
     predictions = list()
     actual = list()
 
     print("\n NN validation : \n")
+
+    i = 0
     for row in dataset:
         prediction = predict(network,row)
         predictions.append(prediction)
         actual.append(row[-1])
-        print('>Excepted = %d, Predicted = %d' % (row[-1],prediction))
+        print('>Input = %d, Excepted = %d, Predicted = %d' % (i,row[-1],prediction))
+        i+=1
 
     #def accuracy_metric(actutal,predicted):
     accuracy = accuracy_metric(actual,predictions)
     print('\n The accuracy of the NN : %f' % (accuracy))
-    #Predict on a row data
-    #test = [2.674382,2.45555423,0]
-    #print(network)
+
+    #Plot error accuracy
+    plt_error_accuracy(epoch_errors)
