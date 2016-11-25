@@ -21,8 +21,21 @@ def str_to_float(dataset,column):
     for row in dataset:
         row[column] = float(row[column].strip())
 
-#TODO : Convert string column to integer
+# Convert string column to integer
+def str_column_to_int(dataset, column):
+	class_values = [row[column] for row in dataset]
+	unique = set(class_values)
+	lookup = dict()
+	for i, value in enumerate(unique):
+		lookup[value] = i
+	for row in dataset:
+		row[column] = lookup[row[column]]
+	return lookup
 
+#Find the min and max values for each column
+def dataset_minmax(dataset):
+    minmax = list()
+    for
 #Accuracy metrics
 def accuracy_metric(actual,predicted):
     correct = 0
@@ -156,15 +169,6 @@ def plt_error_accuracy(epoch_errors):
 
 if __name__ == "__main__":
     seed(1)
-    # Backpropagation error :
-    #network = [[{'output': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
-    #		[{'output': 0.6213859615555266, 'weights': [0.2550690257394217, 0.49543508709194095]},
-    #        {'output': 0.6573693455986976, 'weights': [0.4494910647887381, 0.651592972722763]}]]
-    #expected = [0, 1]
-    #row = [1,0,None]
-    #backward_propagate_error(network,expected)
-    #for layer in network:
-    #    print(layer)
 
     dataset = [[2.7810836,2.550537003,0],
 	[1.465489372,2.362125076,0],
@@ -183,14 +187,15 @@ if __name__ == "__main__":
     n_outputs = len(set([row[-1] for row in dataset]))
     network = initialize_netwrok(n_inputs,2,n_outputs)
     #print(network)
+    print("The NN evolution : ")
     epoch_errors = train_network(network,dataset,0.500,6,n_outputs)
 
     predictions = list()
     actual = list()
 
-    print("\n NN validation : \n")
+    print("\nNN validation : ")
 
-    i = 0
+    i = 1
     for row in dataset:
         prediction = predict(network,row)
         predictions.append(prediction)
@@ -200,7 +205,7 @@ if __name__ == "__main__":
 
     #def accuracy_metric(actutal,predicted):
     accuracy = accuracy_metric(actual,predictions)
-    print('\n The accuracy of the NN : %f' % (accuracy))
+    print('\nThe accuracy of the NN : %f' % (accuracy))
 
     #Plot error accuracy
-    plt_error_accuracy(epoch_errors)
+    #plt_error_accuracy(epoch_errors)
