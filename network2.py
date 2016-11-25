@@ -25,7 +25,7 @@ def activate(weights,inputs):
 #It can take any input and produces a value between 0 and 1, we can easily calculate the derivation
 # sigmoid function is output = 1/(1+exp(-activation))
 def transfert(activation):
-    return 1.0/1.0+exp(-activation)
+    return 1.0 / (1.0+exp(-activation))
 
 #Forwad propagation : we wor through each layer of our network calculating the outputs for each neurons. Outputs from one layer becomes
 #input to the neurons of the following layers
@@ -69,7 +69,7 @@ def backward_propagate_error(network,expected):
                 errors.append(expected[j]-neuron['output'])
         for j in range(len(layer)): #explore neuron in layer
             neuron = layer[j]
-            neuron['delta'] = errors[j]*transfert_derivate(neuron['output'])
+            neuron['delta'] = errors[j] * transfert_derivate(neuron['output'])
 
 
 #The network is trained using a stochastic gradient descent, the involves multiple iterations on row dat => data forward propagating
@@ -108,8 +108,13 @@ def train_network(network,train,learning_rate,n_epochs,n_outputs):
             update_weights(network,row,learning_rate)
         print('>> epoch = %d, learning_rate = %.3f, error = %.3f' % (epoch,learning_rate,sum_error))
 
+#Define a function to predict the output of a trained neural networks
+def predict(network,row):
+    outputs = forward_propagate(network,row)
+    return outputs.index(max(outputs))
+
 if __name__ == "__main__":
-    #seed(1)
+    seed(1)
     # Backpropagation error :
     #network = [[{'output': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
     #		[{'output': 0.6213859615555266, 'weights': [0.2550690257394217, 0.49543508709194095]},
@@ -119,6 +124,7 @@ if __name__ == "__main__":
     #backward_propagate_error(network,expected)
     #for layer in network:
     #    print(layer)
+
     dataset = [[2.7810836,2.550537003,0],
 	[1.465489372,2.362125076,0],
 	[3.396561688,4.400293529,0],
@@ -129,9 +135,17 @@ if __name__ == "__main__":
 	[6.922596716,1.77106367,1],
 	[8.675418651,-0.242068655,1],
 	[7.673756466,3.508563011,1]]
+
+
     #def initialize_netwrok(n_inputs,n_hidden,n_outputs):
     n_inputs = len(dataset[0])-1 #get the number of input (in this case we have only 2 outputs)
     n_outputs = len(set([row[-1] for row in dataset]))
     network = initialize_netwrok(n_inputs,2,n_outputs)
-    train_network(network,dataset,0.01,1000,n_outputs)
-    print(network)
+    #print(network)
+    train_network(network,dataset,0.500,30,n_outputs)
+    for row in dataset:
+        prediction = predict(network,row)
+        print('>Excepted = %d, Predicted = %d' % (row[-1],prediction))
+    #Predict on a row data
+    #test = [2.674382,2.45555423,0]
+    #print(network)
