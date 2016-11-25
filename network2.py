@@ -5,9 +5,9 @@ from math import exp
 #Initialize the neural network with the number of inputs, the number of neurons in the hidden layer and n_outputs in the output layer
 def initialize_netwrok(n_inputs,n_hidden,n_outputs):
     network = list() #W'll implement network as a list of layer and layer as a list of dictionnary (weights and bias)
-    hidden_layers = [{'weights ': [random() for i in range(n_inputs+1)]} for i in range(n_hidden)] #randomly Initialize the weights of hidden layer, in this case the bias is a special weight (the last index of the weights array)
+    hidden_layers = [{'weights': [random() for i in range(n_inputs+1)]} for i in range(n_hidden)] #randomly Initialize the weights of hidden layer, in this case the bias is a special weight (the last index of the weights array)
     network.append(hidden_layers)
-    output_layer = [{'weights ':[random() for i in range(n_outputs+1)]} for i in range(n_outputs)] # randomly initialize the weights of output layyer of the neural networkds
+    output_layer = [{'weights':[random() for i in range(n_hidden+1)]} for i in range(n_outputs)] # randomly initialize the weights of output layyer of the neural networkds
     network.append(output_layer)
     return network
 
@@ -81,7 +81,7 @@ def backward_propagate_error(network,expected):
 #update weights of a given raw data input
 #input of output layer is the output from the hidden layers
 #TODO : Use stochasitic gradient descent (shuffle data and use only a part of data, it will be verry fast)
-def update_weights(network,rate,learning_rate):
+def update_weights(network,row,learning_rate):
     for i in range(len(network)): #loop on network layers
         inputs = row
         if i!= 0:
@@ -89,18 +89,49 @@ def update_weights(network,rate,learning_rate):
         for neuron in network[i]: #loop on neuron in the ith layer
             for j in range(len(inputs)-1): #loop on inout data
                 neuron['weights'][j] += learning_rate * neuron['delta'] * inputs[j]
-            neuron[weights][-1] += learning_rate * neuron['delta']
+            neuron['weights'][-1] += learning_rate * neuron['delta']
 
 
-
+#Train network : looping for a fixed number of epochs and within each epoch updating the network for each row in the training dataset
+#the execpted number of output values is used to transform class value in the training data set into a one hot encoder
+#we can plot the evolution of error rate of each epoch iterations in order to see the evolution of networks based on epochs
+#sum of squared error
+def train_network(network,train,learning_rate,n_epochs,n_outputs):
+    for epoch in range(n_epochs):
+        sum_error = 0
+        for row in train:
+            outputs = forward_propagate(network,row)
+            expected = [0 for i in range(n_outputs)]
+            expected[row[-1]] = 1
+            sum_error += sum([(expected[i]-outputs[i])**2 for i in range(len(expected))])
+            backward_propagate_error(network,expected)
+            update_weights(network,row,learning_rate)
+        print('>> epoch = %d, learning_rate = %.3f, error = %.3f' % (epoch,learning_rate,sum_error))
 
 if __name__ == "__main__":
-    seed(1)
-    network = [[{'output': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
-    		[{'output': 0.6213859615555266, 'weights': [0.2550690257394217, 0.49543508709194095]},
-            {'output': 0.6573693455986976, 'weights': [0.4494910647887381, 0.651592972722763]}]]
-    expected = [0, 1]
-    row = [1,0,None]
-    backward_propagate_error(network,expected)
-    for layer in network:
-        print(layer)
+    #seed(1)
+    # Backpropagation error :
+    #network = [[{'output': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
+    #		[{'output': 0.6213859615555266, 'weights': [0.2550690257394217, 0.49543508709194095]},
+    #        {'output': 0.6573693455986976, 'weights': [0.4494910647887381, 0.651592972722763]}]]
+    #expected = [0, 1]
+    #row = [1,0,None]
+    #backward_propagate_error(network,expected)
+    #for layer in network:
+    #    print(layer)
+    dataset = [[2.7810836,2.550537003,0],
+	[1.465489372,2.362125076,0],
+	[3.396561688,4.400293529,0],
+	[1.38807019,1.850220317,0],
+	[3.06407232,3.005305973,0],
+	[7.627531214,2.759262235,1],
+	[5.332441248,2.088626775,1],
+	[6.922596716,1.77106367,1],
+	[8.675418651,-0.242068655,1],
+	[7.673756466,3.508563011,1]]
+    #def initialize_netwrok(n_inputs,n_hidden,n_outputs):
+    n_inputs = len(dataset[0])-1 #get the number of input (in this case we have only 2 outputs)
+    n_outputs = len(set([row[-1] for row in dataset]))
+    network = initialize_netwrok(n_inputs,2,n_outputs)
+    train_network(network,dataset,0.01,1000,n_outputs)
+    print(network)
