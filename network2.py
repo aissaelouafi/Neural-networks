@@ -1,6 +1,34 @@
 from random import seed
 from random import random
+from random import randrange
 from math import exp
+from csv import reader
+
+#Load csv file
+def load_csv(filename):
+    dataset = list()
+    with open(filename,'r') as file:
+        csv_reader = reader(file)
+        for row in csv_reader:
+            if not row:
+                continue
+            dataset.append(row)
+    return dataset
+
+#Convert string column to flaot
+def str_to_float(dataset,column):
+    for row in dataset:
+        row[column] = float(row[column].strip())
+
+#TODO : Convert string column to integer
+
+#Accuracy metrics
+def accuracy_metric(actual,predicted):
+    correct = 0
+    for i in range(len(actual)):
+        if (actual[i] == predicted[i]):
+            correct+=1
+    return correct / len(actual)
 
 #Initialize the neural network with the number of inputs, the number of neurons in the hidden layer and n_outputs in the output layer
 def initialize_netwrok(n_inputs,n_hidden,n_outputs):
@@ -143,9 +171,20 @@ if __name__ == "__main__":
     network = initialize_netwrok(n_inputs,2,n_outputs)
     #print(network)
     train_network(network,dataset,0.500,30,n_outputs)
+
+    predictions = list()
+    actual = list()
+
+    print("\n NN validation : \n")
     for row in dataset:
         prediction = predict(network,row)
+        predictions.append(prediction)
+        actual.append(row[-1])
         print('>Excepted = %d, Predicted = %d' % (row[-1],prediction))
+
+    #def accuracy_metric(actutal,predicted):
+    accuracy = accuracy_metric(actual,predictions)
+    print('\n The accuracy of the NN : %f' % (accuracy))
     #Predict on a row data
     #test = [2.674382,2.45555423,0]
     #print(network)
